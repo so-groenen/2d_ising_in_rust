@@ -108,6 +108,10 @@ impl Spin2D
         let index: usize = (i*self.columns + j).try_into()?;
         Ok(index)
     }
+    pub fn reset(&mut self, generator: impl FnMut()->f32)
+    {
+        self.data.fill_with(generator);
+    }
     pub fn at(&self, i: i32, j: i32) -> Result<f32, Spin2DError>
     {
         let index: usize = self._get_index(i,j)?;
