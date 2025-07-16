@@ -1,16 +1,22 @@
 
 mod spin_2d;
 use macroquad::{color, input::{self, KeyCode}, shapes, text, time::draw_fps, window};
-use spin_2d::{Spin2D, ising_state};
+use spin_2d::{Spin2D, ising_state, SpinRNG, SpinMacroquadRng};
 
+
+// The Spin2D methods (Monte carlo methods etc) should be independant of the random number generator
+// For this, we define the "SpinRNG" trait with "generate_rand_f32", "generate_rand_i32" & "new" method.
+// They act as "high-level" wrapper for the spin2D functions.
+// SpinMacroquadRng is a "high-level" wrapper/interface around macroquad::rand::RandGenerator. 
 
 #[macroquad::main("2D Ising")]
 async fn main() 
 {
-    let rows:    i32 = 300; // Spin array has periodic boundary condition: can use negative indices etc
-    let columns: i32 = 300;
+    let rows:    i32 = 256; // Spin array has periodic boundary condition: can use negative indices etc
+    let columns: i32 = 256;
 
-    let mut my_rng = macroquad::rand::RandGenerator::new();
+
+    let mut my_rng       = SpinMacroquadRng::new();
 
     let thermal_state = ||{ising_state::thermal_state(&mut my_rng)};
     let spin_down_state  = ||{ising_state::SPINDOWN};
@@ -21,12 +27,12 @@ async fn main()
     let mut temp: f32          = 2.0;
     let delta_temp: f32        = 0.1;
     let interaction_term: f32  = -1.0; // "noted J" in the App, as in all stat phys text books!
-    let mut avg_mag: f32       = 0.0;
+    // let mut avg_mag: f32       = 0.0;
 
     loop 
     {
         spin_array.perform_monte_carlo_sweep(temp, interaction_term, &mut my_rng);
-        avg_mag = spin_array.get_average_magnetization();
+        let avg_mag = spin_array.get_average_magnetization();
 
         if input::is_key_pressed(KeyCode::Up) 
         {
@@ -53,9 +59,9 @@ async fn main()
             let font_size: f32 = (0.015*window::screen_width()).max(15f32); 
             let text_y: f32    = 0.05*window::screen_height();
             let text_x: f32    = 0.01*window::screen_width();
-            let game_size: f32 = window::screen_width().min(window::screen_height());
-            let offset_x: f32  = (window::screen_width() - game_size) / 2. + 10.;
-            let offset_y: f32  = (window::screen_height() - game_size) / 2. + 10.;
+            let box_size: f32  = window::screen_width().min(window::screen_height());
+            let offset_x: f32  = (window::screen_width() - box_size) / 2. + 10.;
+            let offset_y: f32  = (window::screen_height() - box_size) / 2. + 10.;
             let sq_size: f32   = (window::screen_height() - offset_y * 2.) / std::cmp::min(spin_array.rows(), spin_array.columns()) as f32;
 
             

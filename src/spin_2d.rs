@@ -1,11 +1,18 @@
+// use macroquad::rand::RandomRange;
+
+pub mod spin_rng;
+pub use spin_rng::SpinRNG;
+pub use spin_rng::SpinMacroquadRng;
 
 pub mod ising_state
-{   
+ {
+    use super::spin_rng::SpinRNG;
+
     pub const SPINUP: f32   = 1f32;
     pub const SPINDOWN: f32 = -1f32;
-    pub fn thermal_state(rng: &mut macroquad::rand::RandGenerator) ->f32
+    pub fn thermal_state<T: SpinRNG>(rng: &mut T) ->f32
     {
-        1f32 - 2f32*rng.gen_range(0f32, 1f32).round()
+        1f32 - 2f32*rng.generate_rand_f32(0f32, 1f32).round()
     }
 }
 
@@ -17,8 +24,8 @@ pub struct Spin2D
     columns: i32,
     number_of_spins: i32,
 }
-
-
+    // use rand::rngs;
+ 
 
 #[derive(Debug)]
 pub struct Spin2DError
@@ -143,11 +150,6 @@ impl Spin2D
         Ok(value)
     }
 
-    fn _accept_state(temp: f32, delta_energy: f32, rng: &mut macroquad::rand::RandGenerator) -> bool
-    {
-        let beta: f32 = if temp > 0. {1./temp} else {Spin2D::MAX_BETA};
-        delta_energy < 0. || (rng.gen_range(0f32, 1f32) < (-beta*delta_energy).exp())
-    }
 
     pub fn get_average_magnetization(&self) -> f32
     {
@@ -163,9 +165,9 @@ impl Spin2D
         }
         sum
     }
-    fn _get_random_point(&self, rng: &mut macroquad::rand::RandGenerator) -> (i32, i32)
+    fn _get_random_point<R: SpinRNG>(&self, rng: &mut R) -> (i32, i32)
     {
-        let x: i32 = rng.gen_range(0, self.number_of_spins);
+        let x: i32 = rng.generate_rand_i32(0, self.number_of_spins);
         (x / self.columns, x % self.columns )
     }
     fn _get_delta_energy(&self, i: i32, j: i32, interaction_term: f32) -> f32
@@ -189,7 +191,12 @@ impl Spin2D
         }
         total_energy / self.number_of_spins as f32
     }
-    pub fn perform_monte_carlo_sweep(&mut self, temp: f32, interaction_term: f32, rng: &mut macroquad::rand::RandGenerator)
+    fn _accept_state<R: SpinRNG>(temp: f32, delta_energy: f32, rng: &mut R) -> bool
+    {
+        let beta: f32 = if temp > 0. {1./temp} else {Spin2D::MAX_BETA};
+        delta_energy < 0. || (rng.generate_rand_f32(0f32, 1f32) < (-beta*delta_energy).exp())
+    }
+    pub fn perform_monte_carlo_sweep<R: SpinRNG>(&mut self, temp: f32, interaction_term: f32, rng: &mut R)
     {
         for _ in 0..self.number_of_spins
         {
