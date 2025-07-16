@@ -175,7 +175,7 @@ impl Spin2D
         
         -2.*interaction_term*self.at_unchecked(i,j)*(left_right + up_down)
     }
-    pub fn get_total_energy(&self, interaction_term: f32) -> f32
+    pub fn get_energy_density(&self, interaction_term: f32) -> f32
     {
         let mut total_energy: f32 = 0f32;
         for i in self.rows_range()
@@ -187,7 +187,7 @@ impl Spin2D
                 total_energy  += interaction_term*self.at_unchecked(i,j)*(up + right);
             }
         }
-        total_energy
+        total_energy / self.n as f32
     }
     pub fn perform_monte_carlo_sweep(&mut self, temp: f32, interaction_term: f32, rng: &mut macroquad::rand::RandGenerator)
     {

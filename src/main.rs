@@ -22,10 +22,12 @@ async fn main()
     let delta_temp: f32        = 0.1;
     let interaction_term: f32  = -1.0; // "noted J" in the App, as in all stat phys text books!
     let font_size: f32         = 25f32;
+    let mut avg_mag: f32       = 0.0;
 
     loop 
     {
         spin_array.perform_monte_carlo_sweep(temp, interaction_term, &mut my_rng);
+        avg_mag = spin_array.get_average_magnetization();
 
         if input::is_key_pressed(KeyCode::Up) 
         {
@@ -61,6 +63,7 @@ async fn main()
             text::draw_text("[DOWN]: -0.1", text_x, offset_y + 4.*text_y, font_size, color::BLACK);
             text::draw_text("[SPACE]: polarize up", text_x, offset_y + 5.*text_y, font_size, color::BLACK);
             text::draw_text("[BACKSPACE]: polarize down", text_x, offset_y + 6.*text_y, font_size, color::BLACK);
+            text::draw_text(&format!("magnetization = {:.2}", avg_mag), text_x, offset_y + 7.*text_y, font_size, color::RED);
 
             shapes::draw_rectangle(offset_x, offset_y, game_size - 20., game_size - 20., color::WHITE);
 
