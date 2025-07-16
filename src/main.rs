@@ -1,24 +1,15 @@
 
 mod spin_2d;
-use macroquad::{color, input::{self, KeyCode}, prelude::Conf, shapes, text, time::draw_fps, window};
-// use rand::rngs::ThreadRng;
+use macroquad::{color, input::{self, KeyCode}, shapes, text, time::draw_fps, window};
 use spin_2d::{Spin2D, ising_state};
 
-// fn window_conf() -> Conf
-// {
-//     Conf{window_title: "2D Ising: Metropolis algorithm".to_owned(),
-//         window_width: 1024,
-//         window_height: 768,
-//         ..Default::default()}
-// }
 
-#[macroquad::main("window_conf")]
+#[macroquad::main("2D Ising")]
 async fn main() 
 {
-    let rows:    i32 = 300;
+    let rows:    i32 = 300; // Spin array has periodic boundary condition: can use negative indices etc
     let columns: i32 = 300;
 
-    // let mut my_rng: ThreadRng  = rand::rng(); 
     let mut my_rng = macroquad::rand::RandGenerator::new();
 
     let initial_state_generator = ||{ising_state::thermal_state(&mut my_rng)};

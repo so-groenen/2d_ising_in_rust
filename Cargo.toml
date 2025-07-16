@@ -10,4 +10,3 @@ macroquad = "0.4"
 opt-level = 3
 debug = 0
 overflow-checks = false
-wasm-opt = ["-Oz", "--enable-mutable-globals"]
