@@ -15,7 +15,7 @@ pub struct Spin2D
     data: Vec<f32>,
     rows: i32,
     columns: i32,
-    n: i32,
+    number_of_spins: i32,
 }
 
 
@@ -49,7 +49,7 @@ impl From <std::num::TryFromIntError> for Spin2DError
 //helper function
 fn get_mod(x: i32, n: i32) -> i32
 {   
-
+    assert!(n > 0);
     let mut x = x%n;
     while x < 0
     {
@@ -97,7 +97,7 @@ impl Spin2D
         let mut data: Vec<f32> = vec![Default::default(); n_elements];
         data.fill_with(generator);
 
-        Ok(Spin2D { data, rows, columns , n: n_elements.try_into().unwrap()})
+        Ok(Spin2D { data, rows, columns , number_of_spins: n_elements.try_into().unwrap()})
     }    
     fn _get_index(&self, i: i32, j: i32) -> Result<usize, Spin2DError>
     {
@@ -151,8 +151,8 @@ impl Spin2D
 
     pub fn get_average_magnetization(&self) -> f32
     {
-        assert!(self.n>0);
-        self.sum() / self.n as f32
+        assert!(self.number_of_spins>0);
+        self.sum() / self.number_of_spins as f32
     }
     pub fn sum(&self) -> f32
     {
@@ -165,7 +165,7 @@ impl Spin2D
     }
     fn _get_random_point(&self, rng: &mut macroquad::rand::RandGenerator) -> (i32, i32)
     {
-        let x: i32 = rng.gen_range(0, self.n);
+        let x: i32 = rng.gen_range(0, self.number_of_spins);
         (x / self.columns, x % self.columns )
     }
     fn _get_delta_energy(&self, i: i32, j: i32, interaction_term: f32) -> f32
@@ -187,14 +187,14 @@ impl Spin2D
                 total_energy  += interaction_term*self.at_unchecked(i,j)*(up + right);
             }
         }
-        total_energy / self.n as f32
+        total_energy / self.number_of_spins as f32
     }
     pub fn perform_monte_carlo_sweep(&mut self, temp: f32, interaction_term: f32, rng: &mut macroquad::rand::RandGenerator)
     {
-        for _ in 0..self.n
+        for _ in 0..self.number_of_spins
         {
             let (i_rand, j_rand) = self._get_random_point(rng);
-            let delta_energy     = self._get_delta_energy(i_rand, j_rand, interaction_term);
+            let delta_energy          = self._get_delta_energy(i_rand, j_rand, interaction_term);
             if Self::_accept_state(temp, delta_energy, rng) 
             {
                 *self.at_mut(i_rand, j_rand).unwrap() *= -1.;

@@ -21,7 +21,6 @@ async fn main()
     let mut temp: f32          = 2.0;
     let delta_temp: f32        = 0.1;
     let interaction_term: f32  = -1.0; // "noted J" in the App, as in all stat phys text books!
-    let font_size: f32         = 25f32;
     let mut avg_mag: f32       = 0.0;
 
     loop 
@@ -51,12 +50,14 @@ async fn main()
         window::clear_background(color::LIGHTGRAY);
 
             draw_fps();
-            let game_size = window::screen_width().min(window::screen_height());
-            let offset_x  = (window::screen_width() - game_size) / 2. + 10.;
-            let offset_y  = (window::screen_height() - game_size) / 2. + 10.;
-            let sq_size   = (window::screen_height() - offset_y * 2.) / std::cmp::min(spin_array.rows(), spin_array.columns()) as f32;
-            let text_y    = 0.05*window::screen_height();
-            let text_x    = 0.01*window::screen_width();
+            let font_size: f32 = (0.015*window::screen_width()).max(15f32); 
+            let text_y: f32    = 0.05*window::screen_height();
+            let text_x: f32    = 0.01*window::screen_width();
+            let game_size: f32 = window::screen_width().min(window::screen_height());
+            let offset_x: f32  = (window::screen_width() - game_size) / 2. + 10.;
+            let offset_y: f32  = (window::screen_height() - game_size) / 2. + 10.;
+            let sq_size: f32   = (window::screen_height() - offset_y * 2.) / std::cmp::min(spin_array.rows(), spin_array.columns()) as f32;
+
             
             text::draw_text(&format!("temp: {:.1}(J/kB)", temp), text_x, offset_y + 2.*text_y, font_size, color::BLACK);
             text::draw_text("[UP]: +0.1", text_x, offset_y + 3.*text_y, font_size, color::BLACK);
@@ -65,14 +66,12 @@ async fn main()
             text::draw_text("[BACKSPACE]: polarize down", text_x, offset_y + 6.*text_y, font_size, color::BLACK);
             text::draw_text(&format!("magnetization = {:.2}", avg_mag), text_x, offset_y + 7.*text_y, font_size, color::RED);
 
-            shapes::draw_rectangle(offset_x, offset_y, game_size - 20., game_size - 20., color::WHITE);
-
 
             for i in spin_array.rows_range() 
             {
                 for j in spin_array.columns_range() 
                 {
-                    let color = match spin_array.at_unchecked(i, j) // correct range is ensured by the use of iterators
+                    let color = match spin_array.at_unchecked(i, j) // correct range is ensured by the use of Ranges
                     {
                         ising_state::SPINUP   => color::DARKBLUE,
                         ising_state::SPINDOWN => color::DARKPURPLE,
