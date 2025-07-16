@@ -1,0 +1,13 @@
+[package]
+name = "ising_2D"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+macroquad = "0.4"
+
+[profile.release]
+opt-level = 3
+debug = 0
+overflow-checks = false
+wasm-opt = ["-Oz", "--enable-mutable-globals"]
