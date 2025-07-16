@@ -1,5 +1,3 @@
-// use macroquad::rand::RandomRange;
-
 pub mod spin_rng;
 pub use spin_rng::SpinRNG;
 pub use spin_rng::SpinMacroquadRng;
@@ -24,8 +22,7 @@ pub struct Spin2D
     columns: i32,
     number_of_spins: i32,
 }
-    // use rand::rngs;
- 
+
 
 #[derive(Debug)]
 pub struct Spin2DError
@@ -104,7 +101,7 @@ impl Spin2D
         let mut data: Vec<f32> = vec![Default::default(); n_elements];
         data.fill_with(generator);
 
-        Ok(Spin2D { data, rows, columns , number_of_spins: n_elements.try_into().unwrap()})
+        Ok(Spin2D { data, rows, columns, number_of_spins: n_elements.try_into().unwrap()})
     }    
     fn _get_index(&self, i: i32, j: i32) -> Result<usize, Spin2DError>
     {
