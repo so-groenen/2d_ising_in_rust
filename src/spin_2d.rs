@@ -67,15 +67,15 @@ impl Spin2D
     const MAX_BETA: f32 = 1E6;
     fn _get_total_elements_usize(rows: i32, columns: i32) -> Result<usize, Spin2DError>
     {
-        if rows * columns <= 0
+        if rows*columns <= 0 || (rows <0 && columns < 0)
         {
-            return Err( Spin2DError 
+            return Err(Spin2DError 
             {
                 from: String::from("Spin2D::new()"),
                 message: String::from("Rows & columns need to be > 0.")
             })
         };
-        let n_elements: usize = (columns*rows).try_into()?;
+        let n_elements: usize = (columns*rows) as usize;
         Ok(n_elements)
     }
     pub fn rows(&self) -> i32
@@ -94,6 +94,14 @@ impl Spin2D
     {
         0..self.columns()
     }
+    pub fn total_number(&self) -> i32
+    {
+        self.number_of_spins
+    }
+    pub fn all_range(&self) -> std::ops::Range<i32>
+    {
+        0..self.number_of_spins
+    }
     pub fn new_with(rows: i32, columns: i32, generator: impl FnMut()->f32) -> Result<Self, Spin2DError>
     {        
         let n_elements: usize  = Self::_get_total_elements_usize(rows, columns)?;
@@ -101,16 +109,15 @@ impl Spin2D
         let mut data: Vec<f32> = vec![Default::default(); n_elements];
         data.fill_with(generator);
 
-        Ok(Spin2D { data, rows, columns, number_of_spins: n_elements.try_into().unwrap()})
+        Ok(Spin2D { data, rows, columns, number_of_spins: n_elements as i32})
     }    
-    fn _get_index(&self, i: i32, j: i32) -> Result<usize, Spin2DError>
+    fn _get_index(&self, i: i32, j: i32) -> usize
     {
-        assert!(self.rows > 0);
-        assert!(self.columns > 0);
+        // assert!(self.rows > 0);
+        // assert!(self.columns > 0);
         let i: i32       = get_mod(i, self.rows);
         let j: i32       = get_mod(j, self.columns);
-        let index: usize = (i*self.columns + j).try_into()?;
-        Ok(index)
+        (i*self.columns + j) as usize
     }
     pub fn reset(&mut self, generator: impl FnMut()->f32)
     {
@@ -118,39 +125,44 @@ impl Spin2D
     }
     pub fn at(&self, i: i32, j: i32) -> Result<f32, Spin2DError>
     {
-        let index: usize = self._get_index(i,j)?;
-        let Some(value)  = self.data.get(index) else
+        let index: usize     = self._get_index(i,j);
+        let Some(value)= self.data.get(index) else
         {
-            return Err(Spin2DError 
-                {
-                    from: String::from("spin2D::at()"),
-                    message: String::from("Access out of bound")
-                });
+            return Err(
+            Spin2DError
+            {
+                from: String::from("spin2D::at()"),
+                message: String::from("Access out of bound")
+            });
         };
         Ok(*value)
     }
     pub fn at_unchecked(&self, i: i32, j: i32) -> f32
     {
-        self.at(i, j).unwrap()
+        self.data[self._get_index(i,j)]
     }
+
     pub fn at_mut(&mut self, i: i32, j: i32) -> Result<&mut f32, Spin2DError>
     {
-        let index: usize = self._get_index(i,j)?;
+        let index: usize = self._get_index(i,j);
         let Some(value)  = self.data.get_mut(index) else
         {
             return Err(Spin2DError 
-                {
-                    from: String::from("Spin2D::at_mut()"),
-                    message: String::from("Access out of bound")
-                });
+            {
+                from: String::from("Spin2D::at_mut()"),
+                message: String::from("Access out of bound")
+            });
         };
         Ok(value)
     }
-
-
+    pub fn at_mut_unchecked(&mut self, i: i32, j: i32) -> &mut f32
+    {
+        let index: usize = self._get_index(i,j);
+        &mut self.data[index]
+    }
     pub fn get_average_magnetization(&self) -> f32
     {
-        assert!(self.number_of_spins>0);
+        // assert!(self.number_of_spins>0);
         self.sum() / self.number_of_spins as f32
     }
     pub fn sum(&self) -> f32
@@ -201,8 +213,22 @@ impl Spin2D
             let delta_energy          = self._get_delta_energy(i_rand, j_rand, interaction_term);
             if Self::_accept_state(temp, delta_energy, rng) 
             {
-                *self.at_mut(i_rand, j_rand).unwrap() *= -1.;
+                *self.at_mut_unchecked(i_rand, j_rand) *= -1.;
             }
         }
+    }
+    pub fn perform_metropolis_algorithm<R: SpinRNG>(&mut self, temp: f32, interaction_term: f32, rng: &mut R) -> (f32, f32)
+    {
+    
+        let (i_rand, j_rand) = self._get_random_point(rng);
+        let delta_energy: f32          = self._get_delta_energy(i_rand, j_rand, interaction_term);
+        let mut delta_spin: f32        = 0f32;
+        if Self::_accept_state(temp, delta_energy, rng) 
+        {
+            let s = self.at_mut_unchecked(i_rand, j_rand);
+            *s *= -1.;
+            delta_spin  = 2f32*(*s); // going from -1 to +1 => dS = +2; other way is dS= -1.
+        }
+        (delta_spin, delta_energy)
     }
 }

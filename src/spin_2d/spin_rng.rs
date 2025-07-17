@@ -1,5 +1,3 @@
-// use macroquad::rand::RandomRange;
-
 pub trait SpinRNG
 {
     fn generate_rand_f32(&mut self, low: f32, high: f32) -> f32;
