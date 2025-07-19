@@ -1,3 +1,7 @@
+// mod periodic_array_2d;
+// pub use crate::periodic_array_2d::PeriodicArray2D;
+// pub use crate::periodic_array_2d::ArrayRngInterface;
+
 pub mod array_rng_interface;
 pub use array_rng_interface::ArrayRngInterface;
 
@@ -50,7 +54,6 @@ fn get_mod(x: i32, n: i32) -> i32
 
 impl PeriodicArray2D 
 {   
-    // const MAX_BETA: f32 = 1E6;
     fn _get_total_elements_usize(rows: i32, columns: i32) -> Result<usize, PeriodicArrayError>
     {
         if rows*columns <= 0 || (rows <0 && columns < 0)

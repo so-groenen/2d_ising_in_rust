@@ -1,6 +1,5 @@
-mod periodic_array_2d;
-pub use crate::periodic_array_2d::PeriodicArray2D;
-pub use crate::periodic_array_2d::ArrayRngInterface;
+
+use periodic_array_2d::{PeriodicArray2D, ArrayRngInterface};
 
 // The monte carlo functions should NOT depend on specific RNGs, it should be flexible enough that the user can chooose which RNG to use.
 // therefore we make it a Trait (or interface if you have a OOP background)
@@ -19,34 +18,8 @@ pub mod ising_state
         1f32 - 2f32*rng.generate_rand_f32(0f32, 1f32).round()
     }
 }
-
-pub struct MacroquadRng
-{
-    generator: macroquad::rand::RandGenerator
-}
-impl ArrayRngInterface for MacroquadRng
-{
-    fn generate_rand_i32(&mut self, low: i32, high: i32) -> i32
-    {
-        self.generator.gen_range(low, high)
-    }
-}
-impl MonteCarloRngInterface for MacroquadRng
-{
-    fn generate_rand_f32(&mut self, low: f32, high: f32) -> f32
-    {
-        self.generator.gen_range(low, high)
-    }
-}
-impl MacroquadRng
-{
-    pub fn new() -> MacroquadRng 
-    {
-        MacroquadRng {generator: macroquad::rand::RandGenerator::new()}
-    }
-}
-
-pub mod monte_carlo
+ 
+pub mod metropolis
 {
     use super::*;
     pub const MAX_BETA: f32 = 1E6;

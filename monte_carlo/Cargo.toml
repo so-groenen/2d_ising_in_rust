@@ -1,0 +1,7 @@
+[package]
+name = "monte_carlo"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+periodic_array_2d = {path = "../periodic_array_2d"}

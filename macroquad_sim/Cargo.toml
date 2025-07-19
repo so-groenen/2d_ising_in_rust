@@ -1,0 +1,10 @@
+[package]
+name = "macroquad_sim"
+version = "0.1.0"
+edition = "2024"
+ 
+[dependencies]
+periodic_array_2d = {path = "../periodic_array_2d" }
+monte_carlo       = {path = "../monte_carlo" }
+
+macroquad = "0.4.1"

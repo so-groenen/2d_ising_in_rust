@@ -1,10 +1,17 @@
 
+use periodic_array_2d::PeriodicArray2D;
+use monte_carlo::ising_state;
+use monte_carlo::metropolis;
+
+mod macroquad_rng;
+use macroquad_rng::MacroquadRng;
+
 use macroquad::{color::{self}, input::{self, KeyCode}, shapes, text, time::draw_fps, window};
-use ising_2d::{PeriodicArray2D, ising_state, monte_carlo, MacroquadRng};
 
 
-const ROWS:    i32 = 256; // Spin array has periodic boundary condition: can use negative indices etc
-const COLUMNS: i32 = 256;
+const ROWS:    i32          = 256;     // Spin array has periodic boundary condition, I therefor use signed ints rather than usize
+const COLUMNS: i32          = 256;
+const INTERACTION_TERM: f32 = -1f32; // noted "J" in the App, as in all stat phys text books, but i don't like single char constants!
 
 #[macroquad::main("2D Ising")]
 async fn main() 
@@ -18,13 +25,13 @@ async fn main()
 
     let mut spin_array = PeriodicArray2D::new_with(ROWS, COLUMNS, thermal_state)
         .expect("Rows & cols must be > 0.");
+    
     let mut temp: f32          = 2.0;
     let delta_temp: f32        = 0.1;
-    let interaction_term: f32  = -1.0; // "noted J" in the App, as in all stat phys text books!
 
     loop 
     {
-        monte_carlo::perform_monte_carlo_sweep(&mut spin_array, &mut my_rng, temp, interaction_term);
+        metropolis::perform_monte_carlo_sweep(&mut spin_array, &mut my_rng, temp, INTERACTION_TERM);
         if input::is_key_pressed(KeyCode::Up) 
         {
             temp += delta_temp;
@@ -51,7 +58,7 @@ async fn main()
             let sq_size: f32   = (window::screen_height() - offset_y * 2.) / std::cmp::min(ROWS, COLUMNS) as f32;
         
 
-            let mut magnetization = 0f32;
+            let mut magnetization: f32 = 0f32;
             for i in spin_array.rows_range() 
             {
                 for j in spin_array.columns_range() 
