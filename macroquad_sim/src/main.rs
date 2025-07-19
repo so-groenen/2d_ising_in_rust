@@ -31,7 +31,7 @@ async fn main()
 
     loop 
     {
-        metropolis::perform_monte_carlo_sweep(&mut spin_array, &mut my_rng, temp, INTERACTION_TERM);
+        metropolis::perform_metropolis_sweep(&mut spin_array, &mut my_rng, temp, INTERACTION_TERM);
         if input::is_key_pressed(KeyCode::Up) 
         {
             temp += delta_temp;

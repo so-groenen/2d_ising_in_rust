@@ -1,5 +1,4 @@
-// extern crate lib;
-// extern 
+
 use periodic_array_2d::ArrayRngInterface;
 use monte_carlo::MonteCarloRngInterface;
 

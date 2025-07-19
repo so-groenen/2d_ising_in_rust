@@ -37,7 +37,7 @@ pub mod metropolis
         delta_energy < 0. || (rng.generate_rand_f32(0f32, 1f32) < (-beta*delta_energy).exp())
     }
 
-    pub fn perform_monte_carlo_sweep<R>(spin_2d_arr: &mut PeriodicArray2D, rng: &mut R, temp: f32, interaction_term: f32)
+    pub fn perform_metropolis_sweep<R>(spin_2d_arr: &mut PeriodicArray2D, rng: &mut R, temp: f32, interaction_term: f32)
         where R: MonteCarloRngInterface + ArrayRngInterface
     {
         for _ in 0..spin_2d_arr.total_number()
@@ -49,5 +49,20 @@ pub mod metropolis
                 *spin_2d_arr.at_mut_unchecked(i_rand, j_rand) *= -1.;
             }
         }
+    }
+    pub fn perform_metropolis_proposal<R>(spin_2d_arr: &mut PeriodicArray2D, rng: &mut R, temp: f32, interaction_term: f32) -> f32
+        where R: MonteCarloRngInterface + ArrayRngInterface
+    {
+        let (i_rand, j_rand) = spin_2d_arr.get_random_point(rng);
+        let delta_energy          = _get_delta_energy(spin_2d_arr, i_rand, j_rand, interaction_term);
+        let mut delta_spin        = 0f32;
+        if _accept_state(temp, delta_energy, rng) 
+        {
+            let s: &mut f32 = spin_2d_arr.at_mut_unchecked(i_rand, j_rand);
+            // *spin_2d_arr.at_mut_unchecked(i_rand, j_rand) *= -1.;
+            (*s) *= -1.;
+            delta_spin = 2.*(*s);
+        }
+        delta_spin
     }
 }

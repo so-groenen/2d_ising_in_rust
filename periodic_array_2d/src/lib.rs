@@ -38,7 +38,17 @@ impl From <std::num::TryFromIntError> for PeriodicArrayError
         }
     }
 }
-
+impl From <&str> for PeriodicArrayError  
+{
+    fn from(error: &str) -> Self
+    {
+        PeriodicArrayError 
+        {
+            from: String::from("TryFromIntError"),
+            message: error.to_string(),
+        }
+    }
+}
 
 //helper function
 fn get_mod(x: i32, n: i32) -> i32
