@@ -1,5 +1,5 @@
 [package]
-name = "ising_2D"
+name = "ising_2d"
 version = "0.1.0"
 edition = "2021"
 
