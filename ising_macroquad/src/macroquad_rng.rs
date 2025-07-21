@@ -1,6 +1,6 @@
 
-use periodic_array_2d::ArrayRngInterface;
-use monte_carlo::MonteCarloRngInterface;
+use periodic_array_2d_lib::ArrayRngInterface;
+use monte_carlo_lib::MonteCarloRngInterface;
 
 pub struct MacroquadRng
 {

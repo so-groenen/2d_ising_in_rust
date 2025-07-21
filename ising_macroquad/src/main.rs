@@ -1,17 +1,18 @@
 
-use periodic_array_2d::PeriodicArray2D;
-use monte_carlo::ising_state;
-use monte_carlo::metropolis;
+use periodic_array_2d_lib::PeriodicArray2D;
+use monte_carlo_lib::ising_state;
+use monte_carlo_lib::metropolis;
 
-mod macroquad_rng;
-use macroquad_rng::MacroquadRng;
+pub mod macroquad_rng;
+pub use crate::macroquad_rng::MacroquadRng;
 
 use macroquad::{color::{self}, input::{self, KeyCode}, shapes, text, time::draw_fps, window};
-
 
 const ROWS:    i32          = 256;     // Spin array has periodic boundary condition, I therefor use signed ints rather than usize
 const COLUMNS: i32          = 256;
 const INTERACTION_TERM: f32 = -1f32; // noted "J" in the App, as in all stat phys text books, but i don't like single char constants!
+
+
 
 #[macroquad::main("2D Ising")]
 async fn main() 
@@ -51,12 +52,12 @@ async fn main()
             spin_array.reset(spin_down_state);
         }
 
-        window::clear_background(color::LIGHTGRAY);
+        window::clear_background(color::LIGHTGRAY);           
             let box_size: f32  = window::screen_width().min(window::screen_height());
             let offset_x: f32  = (window::screen_width() - box_size) / 2. + 10.;
             let offset_y: f32  = (window::screen_height() - box_size) / 2. + 10.;
             let sq_size: f32   = (window::screen_height() - offset_y * 2.) / std::cmp::min(ROWS, COLUMNS) as f32;
-        
+
 
             let mut magnetization: f32 = 0f32;
             for i in spin_array.rows_range() 

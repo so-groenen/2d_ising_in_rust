@@ -1,3 +1,3 @@
 [workspace]
-members = ["macroquad_sim", "classical_sim", "periodic_array_2d", "monte_carlo"]
+members = ["ising_macroquad", "ising_egui", "ising_calculation", "periodic_array_2d_lib", "monte_carlo_lib", "os_based_rng"]
 resolver = "3"

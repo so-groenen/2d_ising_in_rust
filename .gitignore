@@ -7,6 +7,10 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+
+/egui_ising/assets
+/egui_ising/index.html
+
 # C extensions
 *.so
 

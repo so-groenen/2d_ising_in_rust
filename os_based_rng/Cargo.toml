@@ -1,0 +1,9 @@
+[package]
+name = "os_based_rng"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+periodic_array_2d_lib = {path = "../periodic_array_2d_lib" }
+monte_carlo_lib       = {path = "../monte_carlo_lib" }
+rand                  = "0.9.2"

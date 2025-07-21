@@ -1,8 +1,7 @@
-use periodic_array_2d::{PeriodicArray2D, PeriodicArrayError};
-use monte_carlo::{ising_state, metropolis};
+use periodic_array_2d_lib::{PeriodicArray2D, PeriodicArrayError};
+use monte_carlo_lib::{ising_state, metropolis};
+use os_based_rng::OsBasedRng;
 
-mod os_based_rng;
-use crate::os_based_rng::OsBasedRng;
 
 #[derive(Debug)]
 pub enum CalculationError
@@ -16,7 +15,7 @@ pub struct ExperimentParam
     pub interaction_term: f32,
     pub steps_between_measures: usize,  
     pub thermalisation_steps: usize,     // = 
-    pub measurement_steps: usize             // = N: Everytime we do a full sweep we take the measure
+    pub measurement_steps: usize       
 }
 
 pub fn create_temp_vector(start: f32, stop: f32, step: f32) -> Vec<f32>
@@ -53,12 +52,12 @@ pub fn perform_magnetization_computation(rows: i32, columns: i32, param: &Experi
         Ok(v)     => v,
         Err(e) => return Err(CalculationError::ArrayInitError(e))
     };
-
     
     let mut magnetizations: Vec<f32> = Vec::new();
+    magnetizations.reserve(param.temperatures.len());
     let number_of_measures : usize   = param.measurement_steps / param.steps_between_measures ;
 
-    for temp in &param.temperatures[..]
+    for temp in param.temperatures.iter()
     {
         spin_2d_arr.reset(||{ising_state::thermal_state(&mut my_rng)});
         for _ in 0..param.thermalisation_steps 
@@ -81,3 +80,5 @@ pub fn perform_magnetization_computation(rows: i32, columns: i32, param: &Experi
 
     Ok(magnetizations)
 }
+
+

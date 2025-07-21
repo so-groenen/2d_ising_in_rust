@@ -1,7 +1,3 @@
-// mod periodic_array_2d;
-// pub use crate::periodic_array_2d::PeriodicArray2D;
-// pub use crate::periodic_array_2d::ArrayRngInterface;
-
 pub mod array_rng_interface;
 pub use array_rng_interface::ArrayRngInterface;
 
@@ -158,11 +154,6 @@ impl PeriodicArray2D
     {
         let index: usize = self._get_index(i,j);
         &mut self.data[index]
-    }
-    pub fn get_average_magnetization(&self) -> f32
-    {
-        // assert!(self.number_of_spins>0);
-        self.sum() / self.number_of_spins as f32
     }
     pub fn sum(&self) -> f32
     {

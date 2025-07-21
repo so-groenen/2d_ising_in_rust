@@ -1,5 +1,5 @@
 
-use periodic_array_2d::{PeriodicArray2D, ArrayRngInterface};
+use periodic_array_2d_lib::{PeriodicArray2D, ArrayRngInterface};
 
 // The monte carlo functions should NOT depend on specific RNGs, it should be flexible enough that the user can chooose which RNG to use.
 // therefore we make it a Trait (or interface if you have a OOP background)
@@ -59,7 +59,6 @@ pub mod metropolis
         if _accept_state(temp, delta_energy, rng) 
         {
             let s: &mut f32 = spin_2d_arr.at_mut_unchecked(i_rand, j_rand);
-            // *spin_2d_arr.at_mut_unchecked(i_rand, j_rand) *= -1.;
             (*s) *= -1.;
             delta_spin = 2.*(*s);
         }
