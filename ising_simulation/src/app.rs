@@ -104,14 +104,17 @@ impl Simulation
         let fps = get_fps();
         let delta_temp: f32 = 0.05f32;
         let delta_mag: f32 = 0.05f32;
+
+        let temp_range = 0f32..=5f32; 
+        let mag_range = -0.5f32..=0.5f32; 
         egui::SidePanel::left("left panel").show(ctx, |ui|
         {
-            let temp_range = 0f32..=5f32; 
+            // let temp_range = 0f32..=5f32; 
             ui.label(format!("FPS: {fps}"));
             ui.heading( format!("2D Ising: {}x{} Metropolis algorithm", ROWS, COLUMNS));
             ui.separator();
             ui.heading(format!("Temperature: {:.2}", self.temperature));
-            ui.horizontal(|ui|
+            ui.horizontal(|ui: &mut egui::Ui|
             {
                 if ui.button("[-]").clicked() && self.temperature > *temp_range.start()
                 {
@@ -126,18 +129,29 @@ impl Simulation
 
             ui.separator();
             ui.heading(format!("External magnetic field: {:.2}", self.extern_mag));
-            if ui.button("Increase [+]").clicked()
+            ui.vertical(|ui|
             {
-                self.extern_mag += delta_mag;    
-            }
-            if ui.button("Decrease [-]").clicked()
-            {
-                self.extern_mag -= delta_mag;               
-            }
-            if ui.button("Reset").clicked()
-            {
-                self.extern_mag = 0f32;                 
-            }
+                ui.horizontal(|ui: &mut egui::Ui|
+                {
+                    if ui.button("[-]").clicked() && self.extern_mag > *mag_range.start()
+                    {
+                        self.extern_mag += delta_mag;    
+                    }       
+                    ui.add( egui::Slider::new(&mut self.extern_mag, mag_range.clone()).show_value(false));       
+                    if ui.button("[+]").clicked() && self.extern_mag < mag_range.clone().end() - delta_mag
+                    {
+                        self.extern_mag -= delta_mag;               
+                    }
+                });
+                ui.vertical_centered_justified(|ui|
+                {
+                    if ui.button("Reset").clicked()
+                    {
+                        self.extern_mag = 0f32;                 
+                    }
+                })
+            });
+            
             ui.separator();
             ui.heading(format!("Magnetization: {:.2}", self.magnetization));
             ui.separator();
