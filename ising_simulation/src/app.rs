@@ -135,12 +135,12 @@ impl Simulation
                 {
                     if ui.button("[-]").clicked() && self.extern_mag > *mag_range.start()
                     {
-                        self.extern_mag += delta_mag;    
+                        self.extern_mag -= delta_mag;    
                     }       
                     ui.add( egui::Slider::new(&mut self.extern_mag, mag_range.clone()).show_value(false));       
                     if ui.button("[+]").clicked() && self.extern_mag < mag_range.clone().end() - delta_mag
                     {
-                        self.extern_mag -= delta_mag;               
+                        self.extern_mag += delta_mag;               
                     }
                 });
                 ui.vertical_centered_justified(|ui|
