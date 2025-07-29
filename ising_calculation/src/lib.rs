@@ -1,7 +1,8 @@
 use periodic_array_2d_lib::{PeriodicArray2D, PeriodicArrayError};
 use monte_carlo_lib::{ising_state, metropolis};
-use os_based_rng::OsBasedRng;
 
+mod rng;
+use rng::OsBasedRng;
 
 #[derive(Debug)]
 pub enum CalculationError
@@ -13,8 +14,9 @@ pub struct ExperimentParam
 {
     pub temperatures: Vec<f32>,
     pub interaction_term: f32,
+    pub extern_mag: f32,
     pub steps_between_measures: usize,  
-    pub thermalisation_steps: usize,     // = 
+    pub thermalisation_steps: usize,      
     pub measurement_steps: usize       
 }
 
@@ -62,14 +64,14 @@ pub fn perform_magnetization_computation(rows: i32, columns: i32, param: &Experi
         spin_2d_arr.reset(||{ising_state::thermal_state(&mut my_rng)});
         for _ in 0..param.thermalisation_steps 
         {
-            metropolis::perform_metropolis_proposal(&mut spin_2d_arr, &mut my_rng, *temp, param.interaction_term);
+            metropolis::perform_metropolis_proposal(&mut spin_2d_arr, &mut my_rng, *temp, param.interaction_term, param.extern_mag);
         }
 
         let mut spin_sum: f32     = spin_2d_arr.sum();
         let mut spin_sum_avg: f32 = 0f32;
         for n in 0..param.measurement_steps 
         {
-            spin_sum += metropolis::perform_metropolis_proposal(&mut spin_2d_arr, &mut my_rng, *temp, param.interaction_term);
+            spin_sum += metropolis::perform_metropolis_proposal(&mut spin_2d_arr, &mut my_rng, *temp, param.interaction_term, param.extern_mag);
             if n%param.steps_between_measures == 0
             {
                 spin_sum_avg +=  spin_sum.abs()/(number_of_measures as f32);

@@ -1,9 +1,0 @@
-[package]
-name = "ising_macroquad"
-version = "0.1.0"
-edition = "2024"
- 
-[dependencies]
-periodic_array_2d_lib = {path = "../periodic_array_2d_lib" }
-monte_carlo_lib       = {path = "../monte_carlo_lib" }
-macroquad         = "0.4.1"

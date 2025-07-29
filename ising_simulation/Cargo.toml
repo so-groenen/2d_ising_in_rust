@@ -1,0 +1,21 @@
+[package]
+name = "ising_simulation"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+egui = "0.32.0"
+egui-macroquad = "0.17.3"
+macroquad = "0.4.14"
+miniquad = "0.4.8"
+periodic_array_2d_lib = {path = "../periodic_array_2d_lib"}
+monte_carlo_lib = {path = "../monte_carlo_lib"}
+egui_plot = "0.32.0"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+low_level_render_target_handler = {path = "../low_level_render_target_handler"}
+
+
+
+[profile.release]
+opt-level = 3

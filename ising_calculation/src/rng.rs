@@ -2,7 +2,6 @@
 use periodic_array_2d_lib::ArrayRngInterface;
 use monte_carlo_lib::MonteCarloRngInterface;
 use rand::{self, Rng};
-
 pub struct OsBasedRng
 {
     generator: rand::rngs::ThreadRng

@@ -5,7 +5,9 @@ use ising_calculation::ExperimentParam;
 const ROWS: i32              = 2;     // Spin array has periodic boundary condition, I therefor use signed ints rather than usize
 const COLUMNS: i32           = 2;
 const J: f32                 = -1f32; 
+const EXTERN_MAG: f32        = 0f32; 
 const NUMBER_OF_SPINS: usize = (ROWS as usize)*(COLUMNS as usize);
+
 fn main() 
 {
     let temp_start = 1f32;
@@ -14,6 +16,7 @@ fn main()
     let param: ExperimentParam = ExperimentParam 
     {
         temperatures:           ising_calculation::create_temp_vector(temp_start, temp_stop, step),
+        extern_mag:             EXTERN_MAG,
         interaction_term:       J, 
         steps_between_measures: NUMBER_OF_SPINS, 
         thermalisation_steps:   (NUMBER_OF_SPINS * 1E2 as usize),  //1E6 sweeps accross the lattice

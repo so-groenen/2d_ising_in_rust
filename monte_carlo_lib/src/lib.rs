@@ -23,12 +23,12 @@ pub mod metropolis
 {
     use super::*;
     pub const MAX_BETA: f32 = 1E6;
-    fn _get_delta_energy(spin_2d_arr: &PeriodicArray2D, i: i32, j: i32, interaction_term: f32) -> f32
+    fn _get_delta_energy(spin_2d_arr: &PeriodicArray2D, i: i32, j: i32, interaction_term: f32, extern_mag: f32) -> f32
     {
         let left_right: f32 = spin_2d_arr.at_unchecked(i-1, j) + spin_2d_arr.at_unchecked(i+1, j);
         let up_down: f32    = spin_2d_arr.at_unchecked(i, j+1) + spin_2d_arr.at_unchecked(i, j-1);
         
-        -2.*interaction_term*spin_2d_arr.at_unchecked(i,j)*(left_right + up_down)
+       -2.*(interaction_term*(left_right + up_down) - extern_mag)*spin_2d_arr.at_unchecked(i,j)
     }
     fn _accept_state<R>(temp: f32, delta_energy: f32, rng: &mut R) -> bool where R: MonteCarloRngInterface + ArrayRngInterface
     {
@@ -37,24 +37,24 @@ pub mod metropolis
         delta_energy < 0. || (rng.generate_rand_f32(0f32, 1f32) < (-beta*delta_energy).exp())
     }
 
-    pub fn perform_metropolis_sweep<R>(spin_2d_arr: &mut PeriodicArray2D, rng: &mut R, temp: f32, interaction_term: f32)
+    pub fn perform_metropolis_sweep<R>(spin_2d_arr: &mut PeriodicArray2D, rng: &mut R, temp: f32, interaction_term: f32, extern_mag: f32)
         where R: MonteCarloRngInterface + ArrayRngInterface
     {
         for _ in 0..spin_2d_arr.total_number()
         {
             let (i_rand, j_rand) = spin_2d_arr.get_random_point(rng);
-            let delta_energy          = _get_delta_energy(spin_2d_arr, i_rand, j_rand, interaction_term);
+            let delta_energy          = _get_delta_energy(spin_2d_arr, i_rand, j_rand, interaction_term, extern_mag);
             if _accept_state(temp, delta_energy, rng) 
             {
                 *spin_2d_arr.at_mut_unchecked(i_rand, j_rand) *= -1.;
             }
         }
     }
-    pub fn perform_metropolis_proposal<R>(spin_2d_arr: &mut PeriodicArray2D, rng: &mut R, temp: f32, interaction_term: f32) -> f32
+    pub fn perform_metropolis_proposal<R>(spin_2d_arr: &mut PeriodicArray2D, rng: &mut R, temp: f32, interaction_term: f32, extern_mag: f32) -> f32
         where R: MonteCarloRngInterface + ArrayRngInterface
     {
         let (i_rand, j_rand) = spin_2d_arr.get_random_point(rng);
-        let delta_energy          = _get_delta_energy(spin_2d_arr, i_rand, j_rand, interaction_term);
+        let delta_energy          = _get_delta_energy(spin_2d_arr, i_rand, j_rand, interaction_term, extern_mag);
         let mut delta_spin        = 0f32;
         if _accept_state(temp, delta_energy, rng) 
         {
