@@ -2,7 +2,7 @@
 use macroquad::prelude::*;
 use monte_carlo_lib::{ising_state, metropolis};
 use periodic_array_2d_lib::{PeriodicArray2D};
-use egui_macroquad::egui;
+use egui_macroquad::egui::{self, epaint::image};
 
 mod texture_finder;
 mod rng;
@@ -11,12 +11,12 @@ mod real_time_data_handler;
 use rng::MyRNG;
 use real_time_data_handler::RealTimeDataHandler;
 
-const COLUMNS: i32  = 300;  
-const ROWS:    i32  = 300;
-const VIRTUAL_SQR_SIZE: f32 = 2f32;     // This influcences the quality & performance since we are drawing on a (VIRTUAL_SQR_SIZE*ROWS)² pixel texture,
+const COLUMNS: i32  = 512;  
+const ROWS:    i32  = 512;
+// const VIRTUAL_SQR_SIZE: f32 = 2f32;     // This influcences the quality & performance since we are drawing on a (VIRTUAL_SQR_SIZE*ROWS)² pixel texture,
                                         // ...and rendering that texture on a larger eGui UI. Larger VIRTUAL_SQR_SIZE => more quality / less speed.
-const VIRTUAL_WIDTH: f32   = VIRTUAL_SQR_SIZE * (COLUMNS as f32);
-const VIRTUAL_HEIGHT: f32  = VIRTUAL_SQR_SIZE * (ROWS as f32);
+// const VIRTUAL_WIDTH: f32      = VIRTUAL_SQR_SIZE * (COLUMNS as f32);
+// const VIRTUAL_HEIGHT: f32     = VIRTUAL_SQR_SIZE * (ROWS as f32);
 const MY_LIGHT_BLUE: Color    = color_u8!(120, 185, 181, 255 );
 const MY_DARK_BLUE: Color     = color_u8!(50, 10, 107, 255 );
 const INTERATION_TERM: f32 = -1f32;
@@ -24,9 +24,11 @@ const INTERATION_TERM: f32 = -1f32;
 
 pub struct Simulation
 {
-    render_target_cam: Camera2D, 
+    my_render_target: RenderTarget,
+    // render_target_cam: Camera2D, 
     egui_texture: egui::TextureId,
     data_handler: RealTimeDataHandler,
+    spin_img: Image,
 
     spin_2d: PeriodicArray2D,
     my_rng: MyRNG,
@@ -39,27 +41,41 @@ impl Simulation
 {
     pub fn new() -> Self
     {   
-        let my_render_target = macroquad::texture::render_target(VIRTUAL_WIDTH as u32, VIRTUAL_HEIGHT as u32);
+        let my_render_target = macroquad::texture::render_target(COLUMNS as u32, ROWS as u32);
+        // let my_render_target = macroquad::texture::render_target(VIRTUAL_WIDTH as u32, VIRTUAL_HEIGHT as u32);
         let Some(texture_id) = texture_finder::get_raw_opengl_texture_id_from_framebuffer(&my_render_target) else 
         {
             panic!("No texture found: cannot continue.");
         };
         let egui_texture = egui::TextureId::User(texture_id as u64);
         
-        let mut render_target_cam = Camera2D::from_display_rect(Rect::new(0., 0., VIRTUAL_WIDTH, VIRTUAL_HEIGHT));
-        render_target_cam.render_target = Some(my_render_target.clone());
+        // let mut render_target_cam = Camera2D::from_display_rect(Rect::new(0., 0., VIRTUAL_WIDTH, VIRTUAL_HEIGHT));
+        // render_target_cam.render_target = Some(my_render_target.clone());
 
         let mut my_rng = MyRNG::new();
         let generator   = ||ising_state::thermal_state(&mut my_rng);
         let spin_2d = PeriodicArray2D::new_with(ROWS, COLUMNS, generator).expect("Rows && Cols > 0");
         let spin_total: f32 = spin_2d.sum() as f32;
         let magnetization: f32 = spin_total / spin_2d.total_number() as f32;
-
+        let spin_img = Image::gen_image_color(COLUMNS as u16, ROWS as u16, BLACK);
+        
         let n_points: usize = 40;  
         let n_frame_avg: usize = 25;    
         let data_handler: RealTimeDataHandler = RealTimeDataHandler::new(n_points, n_frame_avg); //rename to "RealTimePloter?"
 
-        Self { render_target_cam, egui_texture, data_handler, spin_2d, my_rng, spin_total, magnetization, temperature: 2f32, extern_mag: 0f32 }
+        Self {
+            my_render_target,
+            // render_target_cam,
+            egui_texture,
+            data_handler,
+            spin_img,
+            spin_2d,
+            my_rng,
+            spin_total,
+            magnetization,
+            temperature: 2f32,
+            extern_mag: 0f32
+        }
     }    
 
     fn update_physics(&mut self)
@@ -78,14 +94,14 @@ impl Simulation
     }
     fn draw_spins_on_render_target(&mut self)
     {
-        set_camera(&self.render_target_cam);
-            clear_background(WHITE);
+        // set_camera(&self.render_target_cam);
+            // clear_background(WHITE);
             for i in self.spin_2d.rows_range()
             {
                 for j in self.spin_2d.columns_range()
                 {
-                    let x = j as f32 * VIRTUAL_SQR_SIZE;
-                    let y = i as f32 * VIRTUAL_SQR_SIZE;
+                    // let x = j as f32 * VIRTUAL_SQR_SIZE;
+                    // let y = i as f32 * VIRTUAL_SQR_SIZE;
                     
                     let spin_color = match self.spin_2d.at_unchecked(i, j) 
                     {
@@ -93,10 +109,12 @@ impl Simulation
                         ising_state::SPINDOWN => MY_DARK_BLUE,
                         _ => WHITE    
                     };
-                    draw_rectangle(x, y, VIRTUAL_SQR_SIZE, VIRTUAL_SQR_SIZE, spin_color);
+                    // draw_rectangle(x, y, VIRTUAL_SQR_SIZE, VIRTUAL_SQR_SIZE, spin_color);
+                    self.spin_img.set_pixel(j as u32, i as u32, spin_color);
                 }
             }
-        set_default_camera();
+        // set_default_camera();
+        self.my_render_target.texture.update(&self.spin_img);
     }
 
     fn draw_and_handle_control_panel_ui(&mut self, ctx: &egui::Context)  
