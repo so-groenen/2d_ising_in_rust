@@ -7,7 +7,7 @@ __pycache__/
 *.py[codz]
 *$py.class
 
-
+.VSCodeCounter
 *.ps1
  
 # C extensions

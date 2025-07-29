@@ -12,11 +12,11 @@ use rng::MyRNG;
 use real_time_data_handler::RealTimeDataHandler;
 
 const COLUMNS: i32  = 512;  
-const ROWS:    i32  = 512;
-// const VIRTUAL_SQR_SIZE: f32 = 2f32;     // This influcences the quality & performance since we are drawing on a (VIRTUAL_SQR_SIZE*ROWS)² pixel texture,
-                                        // ...and rendering that texture on a larger eGui UI. Larger VIRTUAL_SQR_SIZE => more quality / less speed.
-// const VIRTUAL_WIDTH: f32      = VIRTUAL_SQR_SIZE * (COLUMNS as f32);
+const ROWS:    i32  = 512;  
+// const VIRTUAL_SQR_SIZE: f32 = 2f32;                                   //<-- Use this to draw using the usual "render target way", ie, using camera2D
+// const VIRTUAL_WIDTH: f32      = VIRTUAL_SQR_SIZE * (COLUMNS as f32);  //<-- Virutual size for render-target if you use set_camera(&render_target_cam)
 // const VIRTUAL_HEIGHT: f32     = VIRTUAL_SQR_SIZE * (ROWS as f32);
+
 const MY_LIGHT_BLUE: Color    = color_u8!(120, 185, 181, 255 );
 const MY_DARK_BLUE: Color     = color_u8!(50, 10, 107, 255 );
 const INTERATION_TERM: f32 = -1f32;
@@ -41,8 +41,10 @@ impl Simulation
 {
     pub fn new() -> Self
     {   
-        let my_render_target = macroquad::texture::render_target(COLUMNS as u32, ROWS as u32);
+        // I use macroquad render_targets rather than macroquad texture_from_img because they are easier to find in the GPU using openGL functions
+        // We can then pass the attached texture to egui to draw.
         // let my_render_target = macroquad::texture::render_target(VIRTUAL_WIDTH as u32, VIRTUAL_HEIGHT as u32);
+        let my_render_target = macroquad::texture::render_target(COLUMNS as u32, ROWS as u32);
         let Some(texture_id) = texture_finder::get_raw_opengl_texture_id_from_framebuffer(&my_render_target) else 
         {
             panic!("No texture found: cannot continue.");
@@ -58,12 +60,12 @@ impl Simulation
         let spin_total: f32 = spin_2d.sum() as f32;
         let magnetization: f32 = spin_total / spin_2d.total_number() as f32;
         let spin_img = Image::gen_image_color(COLUMNS as u16, ROWS as u16, BLACK);
-        
         let n_points: usize = 40;  
         let n_frame_avg: usize = 25;    
         let data_handler: RealTimeDataHandler = RealTimeDataHandler::new(n_points, n_frame_avg); //rename to "RealTimePloter?"
 
-        Self {
+        Self 
+        {
             my_render_target,
             // render_target_cam,
             egui_texture,
@@ -81,7 +83,7 @@ impl Simulation
     fn update_physics(&mut self)
     {
         let mut delta_spin = 0f32;
-        for _ in self.spin_2d.all_range()
+        for _ in self.spin_2d.all_range()   // This "loop" can be merged with the one in "draw spins" for better performance... but i wanted to keep things tidy to make it easier to understand
         {
             delta_spin += metropolis::perform_metropolis_proposal(&mut self.spin_2d, &mut self.my_rng, self.temperature, INTERATION_TERM, self.extern_mag);
         }
@@ -127,7 +129,6 @@ impl Simulation
         let mag_range = -0.5f32..=0.5f32; 
         egui::SidePanel::left("left panel").show(ctx, |ui|
         {
-            // let temp_range = 0f32..=5f32; 
             ui.label(format!("FPS: {fps}"));
             ui.heading( format!("2D Ising: {}x{} Metropolis algorithm", ROWS, COLUMNS));
             ui.separator();
