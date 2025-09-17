@@ -1,3 +1,3 @@
 [workspace]
-members = ["ising_calculation", "periodic_array_2d_lib", "monte_carlo_lib", "ising_simulation", "low_level_render_target_handler"]
+members = ["ising_calculation", "periodic_array_2d_lib", "monte_carlo_lib", "ising_simulation", "xorshifts"]
 resolver = "3"

@@ -2,20 +2,47 @@
 name = "ising_simulation"
 version = "0.1.0"
 edition = "2024"
+include = ["LICENSE-APACHE", "LICENSE-MIT", "**/*.rs", "Cargo.toml"]
+rust-version = "1.85"
+
+[package.metadata.docs.rs]
+all-features = true
+targets = ["x86_64-unknown-linux-gnu", "wasm32-unknown-unknown"]
 
 [dependencies]
-egui = "0.32.0"
-egui-macroquad = "0.17.3"
-macroquad = "0.4.14"
-miniquad = "0.4.8"
+egui   = "0.32"
+eframe = { version = "0.32", default-features = false, features = [
+    "accesskit",     # Make egui compatible with screen readers. NOTE: adds a lot of dependencies.
+    "default_fonts", # Embed the default egui fonts.
+    "glow",          # Use the glow rendering backend. Alternative: "wgpu".
+    "persistence",   # Enable restoring app state when restarting the app.
+    "wayland",       # To support Linux (and CI)
+    "x11",           # To support older Linux distributions (restores one of the default features)
+] }
+log = "0.4.27"
 periodic_array_2d_lib = {path = "../periodic_array_2d_lib"}
 monte_carlo_lib = {path = "../monte_carlo_lib"}
-egui_plot = "0.32.0"
+xorshifts = {path = "../xorshifts"}
+egui_plot = "0.33.0"
+num-traits = "0.2.19"
 
+
+# You only need serde if you want app persistence:
+serde = { version = "1.0.219", features = ["derive"] }
+chrono = "0.4.42"
+
+# native:
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-low_level_render_target_handler = {path = "../low_level_render_target_handler"}
+env_logger = "0.11.8"
 
-
+# web:
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen-futures = "0.4.50"
+web-sys = "0.3.70"              # to access the DOM (to hide the loading text)
 
 [profile.release]
-opt-level = 3
+opt-level = 2 # fast and small wasm
+
+# Optimize all dependencies even in debug builds:
+[profile.dev.package."*"]
+opt-level = 2

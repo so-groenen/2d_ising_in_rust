@@ -1,0 +1,3 @@
+[build]
+target = "x86_64-pc-windows-msvc"
+rustflags = ["-g", "-C","target-cpu=native", "-C","opt-level=3"]

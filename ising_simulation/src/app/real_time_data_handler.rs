@@ -1,7 +1,6 @@
 use std::collections::VecDeque;
 use egui_plot::{Line, Plot, PlotPoints};
-use egui_macroquad::egui::Ui;
-
+use egui::Ui;
 
 pub struct DataDeque
 {
@@ -12,8 +11,7 @@ impl DataDeque
 {
     pub fn new(n: usize) -> Self
     {
-        let data: VecDeque<f32> = (0..n).map(|_i|0f32)
-                                        .collect();
+        let data: VecDeque<f32> = VecDeque::from(vec![0_f32; n] ); 
         Self { data }
     }    
     pub fn pop_and_push(&mut self, value: f32)
@@ -62,7 +60,7 @@ impl RealTimeDataHandler
     }
     pub fn plot_data(&self, ui: &mut Ui, x_label: &'static str, y_label: &'static str, y_min: f64, y_max: f64)
     {
-        let my_series: PlotPoints = (0..self.data_deque.len()).map(|i|
+        let my_series: PlotPoints<'_> = (0..self.data_deque.len()).map(|i|
         {
             let t = i as f64 * -1f64;
             [t, self.data_deque.at(i) as f64]

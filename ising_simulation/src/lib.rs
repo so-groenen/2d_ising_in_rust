@@ -1,2 +1,4 @@
-pub mod app;
-pub use app::Simulation;
+#![warn(clippy::all, rust_2018_idioms)]
+
+mod app;
+pub use app::IsingSimulation;
