@@ -10,6 +10,7 @@ xorshifts             = {path = "../xorshifts"}
 num-traits = "0.2.19"
 rayon      = "1.11.0"
 num = "0.4.3"
+parameter_reader = { git = "https://github.com/so-groenen/rust_parameter_reader.git", version = "0.1.0" }
 
 [profile.release]
 opt-level = 3

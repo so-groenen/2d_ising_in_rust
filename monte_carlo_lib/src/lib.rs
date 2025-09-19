@@ -25,19 +25,11 @@ pub mod ising_state
     {
         -S::one()
     }
-
     pub mod i8_spins 
     {
         pub const SPINUP: i8   = 1_i8;
         pub const SPINDOWN: i8 = -1_i8;
     }
-    // pub mod i32_spins 
-    // {
-    //     pub const SPINUP: i32   = 1_i32;
-    //     pub const SPINDOWN: i32 = -1_i32;
-    // }
-    // pub const SPINUP: i32   = 1_i32;
-    // pub const SPINDOWN: i32 = -1_i32;
     pub fn thermal_state<T, R>(rng: &mut R) -> T  
         where R: MonteCarloRngInterface<f32>, 
               T: Signed + Copy + 'static,
@@ -46,14 +38,7 @@ pub mod ising_state
         ( 1_f32 - 2_f32 * rng.generate_rand_float(0_f32, 1_f32).round()).as_()
     }
 }
-
-// pub trait PhysicalObservable: Float + AddAssign + std::default::Default +'static
-// {    
-// }
-
-// impl<E> PhysicalObservable for E where E: Float + AddAssign + std::default::Default + 'static
-// {    
-// }
+ 
 
 #[derive(Default, Clone, Copy)]
 pub struct SpinEnergyFluctuation<P>(pub P, pub P) where P: PhysicalObservable; // We will use the spin fluctuation dS to construct the magnitization
@@ -144,7 +129,7 @@ pub mod metropolis
  
 
     pub fn get_total_energy<S, P>(spin_2d_arr: &PeriodicArray2D<S,P>, interaction_term: P, extern_mag: P) -> P  
-        where S: SpinValue<P>,// + AsPrimitive<P>, 
+        where S: SpinValue<P>, 
               P: PhysicalObservable
     {
         let mut total_energy = P::zero();

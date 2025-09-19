@@ -13,7 +13,7 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native(
-        "eframe template",
+        "2D Ising Metropolis Simuation",
         native_options,
         Box::new(|cc| Ok(Box::new(ising_simulation::IsingSimulation::new(cc)))),
     )
