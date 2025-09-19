@@ -1,8 +1,12 @@
 # 2d Ising Metropolis Simulation in Rust
-This Rust project contains a 
-* **Real time 2D Ising Simulation**, which uses the Metropolis algorithm to solve 
-a $512\times512$ spin system in real time, and display it live using [egui](https://github.com/emilk/egui) & [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly), as well as 
-* **Basic calculation of the phase diagram**, meaning: Magnetization, energy density, specific heat, magnetic susceptibilities & correlation length to estimate the critical temperature<br>
+
+Click the image to try out the interactive WebAssembly simulation!<br>
+[![Watch the video](docs/assets/screen_shot.png)](https://so-groenen.github.io/2d_ising_in_rust/)
+
+### This Rust project contains 
+1) **Real time 2D Ising Simulation**, which uses the Metropolis algorithm to solve 
+a $512\times512$ spin system in real time, and display it live using [egui](https://github.com/emilk/egui) & [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) 
+2) **Basic calculation of the phase diagram**, meaning: Magnetization, energy density, specific heat, magnetic susceptibilities & correlation length to estimate the critical temperature<br>
 
 ### Goals
 The main goal of this project, was to learn more about Rust for: 
@@ -15,8 +19,7 @@ Being able to run a "perform_computation" for both `f32` & `f64` while maintinin
 * Using Python to interact with high-performance/multithreaded Rust programs. (See [Python Simulation Manager](https://github.com/so-groenen/python_simulation_manager))
 
 ## Real Time Simulation
-Click the image to try out the interactive WebAssembly simulation!<br>
-[![Watch the video](docs/assets/screen_shot.png)](https://so-groenen.github.io/2d_ising_in_rust/)
+
 <br>
 
 You can: 
