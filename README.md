@@ -4,28 +4,34 @@ Click the image to try out the interactive WebAssembly simulation!<br>
 [![Watch the video](docs/assets/screen_shot.png)](https://so-groenen.github.io/2d_ising_in_rust/)
 
 ### This Rust project contains 
-1) **Real time 2D Ising Simulation**, which uses the Metropolis algorithm to solve 
-a $512\times512$ spin system in real time, and display it live using [egui](https://github.com/emilk/egui) & [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) 
-2) **Basic calculation of the phase diagram**, meaning: Magnetization, energy density, specific heat, magnetic susceptibilities & correlation length to estimate the critical temperature<br>
+1) **Real time 2D Ising Simulation**, which uses the Metropolis-[Rosenbluth](https://en.wikipedia.org/wiki/Arianna_W._Rosenbluth) algorithm to solve 
+a $512\times512$ spin system in real time, and displays it live using [egui](https://github.com/emilk/egui) & [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) 
+2) **Basic calculation of the phase diagram**, meaning: magnetization, energy density, specific heat, magnetic susceptibilities & correlation length to estimate the critical temperature<br>
 
 ### Goals
 The main goal of this project, was to learn more about Rust for: 
-* Real time graphics/physics simulation,
+* Real time graphics/physics simulations,
 * Generic programming (using the [num-traits](https://docs.rs/num-traits/latest/num_traits/) crate), 
-* Low-level control of memory/data-strucutres: The spins are encoded as `i8` (1byte), the observables (magnetization etc...) as `f32` for the realtime simulation, but `f64` for the phase diagrams.
-Being able to run a "perform_computation" for both `f32` & `f64` while maintining type safety (ie, not implicit casting) was very important.
-* Low-level implementations of random number generation (Mainly XORshifts, following the guidlines/C implementations of [https://prng.di.unimi.it/](https://prng.di.unimi.it/))
-* Multithreading using [Rayon](https://github.com/rayon-rs/rayon) for Monte-Carlo simultions (and possibly bench mark it against C/C++/FORTRAN libs like OpenMP, or Julia's [Polyester](https://github.com/JuliaSIMD/Polyester.jl)).
+* Low-level control of memory/data-strucutres: The spins are encoded as `i8` (1 byte ints), the observables (magnetization etc...) as `f32` for the realtime simulation, but `f64` for the phase diagrams.
+Being able to run a "perform_computation(...)" type function for both `f32` & `f64`, while maintining type safety (ie, avoid implicit casting) was very important.
+* Low-level implementations of random number generation (mainly XORshifts, following the guidlines/C implementations of [https://prng.di.unimi.it/](https://prng.di.unimi.it/))
+* Multithreading using [Rayon](https://github.com/rayon-rs/rayon) for Monte-Carlo simulations (and possibly benchmark it against C/C++/FORTRAN libs like OpenMP, or Julia's [Polyester](https://github.com/JuliaSIMD/Polyester.jl)).
 * Using Python to interact with high-performance/multithreaded Rust programs. (See [Python Simulation Manager](https://github.com/so-groenen/python_simulation_manager))
 
 ## Real Time Simulation
 
 <br>
 
-You can: 
-* change the temperature
-* change the external magnetic field
-* watch the magnetization change
+### You can:
+* Change the temperature
+* Change the external magnetic field
+* Watch the magnetization change in the plot.
+### What you can try out:
+
+* Go to high temperatures, quickly lower the temperature to see clusters forming, and seeing the two spin type "fight".
+* See how even at low temperatures, ie, temperature < 2 (in units of $J/k_B$) the net magnetization (the red line in the plot) takes a lot of time to move, and stays close to zero.
+* Play around with the external field to stabilize the clusters of your choice & destroy the other ones
+* See how long it takes to get the full screen of one color.
 
 ### Usage (Desktop)
 First git clone it:
@@ -48,7 +54,7 @@ Using the same data-structure, we can perform some calcuation for linear system 
 Parameters used where:
 * $5\times 10^5$ steps both for thermalization & for measurements for $L\in [8, 16, 32, 64]$
 * $1\times 10^5$  steps both for thermalization & for measurements for $L=128$
-* no external magnetic field
+* No external magnetic field
 * Usual ferromagnetic interaction strength $J=1$
 
 Here, one step = one sweep across the lattice = $N=L\times L$ metropolis trials.<br>
