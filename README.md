@@ -29,9 +29,9 @@ Being able to run a "perform_computation(...)" type function for both `f32` & `f
 ### What you can try out:
 
 * Go to high temperatures, quickly lower the temperature to see clusters forming, and seeing the two spin type "fight".
-* See how even at low temperatures, ie, temperature < 2 (in units of $J/k_B$) the net magnetization (the red line in the plot) takes a lot of time to move, and stays close to zero.
+* See how even at low temperatures, ie, temperature around 0.5 (in units of $J/k_B$) the net magnetization (the red line in the plot) takes a lot of time to move, and stays close to zero.
 * Play around with the external field to stabilize the clusters of your choice & destroy the other ones
-* See how long it takes to get the full screen of one color.
+* See how long it takes to get the full screen of one color, while staying above temp = 0.
 
 ### Usage (Desktop)
 First git clone it:
@@ -70,17 +70,28 @@ A more thorough anlysis/calcuation will be done using the Swendsen-Wang algorith
 
 
 ## Rough estimation of the critical temperature
-One way to get the critical temperatures, is to compute the correlation length $\xi$. The correlation length can be computed from the spin-spin correlator/structure factor defined by
+One way to get the critical temperatures, is to compute the correlation length $\xi$. 
+<!-- and taking the small-wave length limit ${\vec{q}} \to (0, q_x = 2\pi/L_x)$ we ca, estimate
+$$\xi \approx  \frac{1}{q_1}\sqrt{\left|\frac{S(0)}{S(q_1)}\right|-1}$$  -->
+
+At the critical temperature, the system exhitibs scale invariance, that is $\xi(T_c;\lambda L) = \lambda\xi(T_c;L)$, where $\lambda$ a scale factor. As a result, $\xi(T_c;L)/L$ is scale independant.
+<br>
+The correlation length $\xi$ can be computed from the structure factor $S(\vec{q})$, itself defined from the spin-spin correlator in Fourier space ($\vec{q}$ denotes the wave-vector):
 $$S(\vec{q}) = \langle\sigma_{\vec{q}}\sigma_{-\vec{q}}\rangle = \sum_{\vec{r}_1,\vec{r}_2}e^{i\vec{q}(\vec{r}_2-\vec{r}_1)}G(\vec{r}_1,\vec{r}_2), \quad \text{where} \quad G(r) \propto e^{-r/\xi}$$
+From the Fourier transform and taking the small wavelength limit $\vec{q} \to \vec{Q} \equiv (2\pi/L_x,0)$
+$$ S(\vec{q}) \propto \frac{\xi}{1  + (\xi q)^2} \qquad  \Longrightarrow \qquad \xi \approx  \frac{1}{Q_x}\sqrt{\left|\frac{S(\vec{0})}{S(\vec{Q})}\right|-1}$$
 
 
-At the critical temperature, the system exhitibs scale invariance, that is $\xi(T_c;\lambda L) = \lambda\xi(T_c;L)$, where $\lambda$ a scale factor.<br> As a result, $\xi(T_c;\lambda L)/L$ is scale invariant and we can estimate $T_c$ from it, using for instance, scipy's spline interpolation: 
+ and we can estimate $T_c$ from it, using for instance, scipy's spline interpolation: 
 
 <center><img src="ising_calculation/results/critical_temperatures/correlation_lengths.png" width="1024"></center>
 <br>
-Notice how the results are noisy! This is the tell-tale sign of long auto-correlation times: When averaging over many many data samples, because of the way metropolis works (it is a single-spin algorithm), many data samples
-will look "similar", and the algorithm will not be able to sample many different configurations in a short span. This can be mitigated using cluster algorithms like the Swendsen-Wang algorithm,
-or the Wolff algorithm, or other types like the Worm algoritm...
+To be compared with Lars Onsager's theoretical prediction:
+
+$$T_c = \frac{2}{\log{1 + \sqrt{2}}} \approx 2.269 \quad \text{(in units of } J/{k_B}\text{)} $$
+
+Notice how our results is noisy for L=128! This is the tell-tale sign of long auto-correlation times: When averaging over many many data samples, because of the way the Metropolis algorithm works (it is a single-spin algorithm), many data samples will look "similar", and the algorithm will not be able to sample many different configurations in the duration of a calculation. This can be mitigated using cluster algorithms like the Swendsen-Wang algorithm,
+or the Wolff algorithm, or other types like the Worm algorithm...
 
 ### Using the Rust calculation from the Python notebook:
 

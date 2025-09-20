@@ -3,11 +3,9 @@
 mod real_time_data_handler;
 mod spin_img;
 
-// mod xorshifts;
- 
+
 
 // Different fast XOR-shift based RNGs to test performance for WASM.
-
 #[allow(unused_imports)]
 use xorshifts::Xoshiro256p;    // Cousin of the "SmallRng" of the rand crate (which is Xoshiro256++).
 #[allow(unused_imports)]
@@ -62,14 +60,6 @@ impl IsingSimulation
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self
     {
         cc.egui_ctx.set_theme(egui::Theme::Dark);
-        // let mut my_rng = if cfg!(target_arch = "wasm32")
-        // {
-        //     Xoshiro256p::from_utc()
-        // }
-        // else
-        // {
-        //     Xoshiro256p::from_os()
-        // };
 
         let mut my_rng    = new_rng();
         let generator     = ||ising_state::thermal_state::<i8, Xoshiro256p>(&mut my_rng);

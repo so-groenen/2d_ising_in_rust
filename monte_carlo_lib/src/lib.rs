@@ -84,7 +84,7 @@ pub mod metropolis
         where R: MonteCarloRngInterface<P> + ArrayRngInterface, 
               P: PhysicalObservable,
     {
-        let beta = if temp.is_sign_positive()  {P::one()/temp} else {unsafe{P::from(MAX_BETA).unwrap_unchecked()}};
+        let beta = if temp.is_sign_positive()  {P::one()/temp} else {P::from(MAX_BETA).unwrap()};
         
         delta_energy.is_sign_negative() || rng.generate_rand_float(P::zero(), P::one()) < (-beta*delta_energy).exp()
     }

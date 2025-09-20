@@ -10,6 +10,8 @@ __pycache__/
 .VSCodeCounter
 *.ps1
  
+calculation_manager/debug.ipynb
+ising_calculation/debug
 # C extensions
 *.so
 

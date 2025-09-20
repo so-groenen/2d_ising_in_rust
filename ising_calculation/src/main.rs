@@ -19,7 +19,7 @@ const PARAMETERS: [&'static str; 7] = [
     "measure_steps",
     "outputfile"
 ];
-// use std::fs;
+
 fn main() 
 {
     let args: Vec<String> = env::args().collect();
@@ -29,14 +29,14 @@ fn main()
         std::process::exit(1);
     }
 
-    let reader = ParameterReader::build(&args[1], &PARAMETERS).unwrap_or_else(|e|
+    let reader = ParameterReader::build(&args[1]).unwrap_or_else(|e|
     {   
         println!("Failed to create parameter reader: {e}");
         std::process::exit(1);
     });
-    let params = reader.parse_parameters(":").unwrap_or_else(|err|
+    let params = reader.parse_parameters(&PARAMETERS, ":").unwrap_or_else(|err|
     {
-        println!("Failed to read parameters: {err}");
+        println!("Missing parameters / failed to parse line: {err}");
         std::process::exit(1);
     });
 

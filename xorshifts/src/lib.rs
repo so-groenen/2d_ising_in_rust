@@ -9,13 +9,6 @@ use chrono::prelude::*;
 use monte_carlo_lib::MonteCarloRngInterface;
 use periodic_array_2d_lib::ArrayRngInterface;
 
-// Different XOR-shift random number generators
-// We have Xorshift64, Xoroshiro128p, Xoshiro256p, Xoshiro256pp
-
-// Based on: https://en.wikipedia.org/wiki/Xorshift 
-// As well as: https://prng.di.unimi.it/ 
-// uses "wrapping_add" && "unbounded_shl" (shift-left) to mimick what you get in C & avoid undef-behaviour
-
 //WASM friendly way of seeding our RNGs
 fn get_random_seed_from_utc_time() -> u64
 {
@@ -29,17 +22,21 @@ fn get_random_seed_from_utc_time() -> u64
 #[cfg(not(target_arch = "wasm32"))]
 fn get_seed_os() -> u64
 {
-    use rand::{self, RngCore};
+    use rand::rand_core::{TryRngCore, OsRng};
 
-    let mut rng = rand::rng();
-    let seed = rng.next_u64();
+    // use rand::{self, RngCore};
+    let mut key = [0_u8; 16];
+    OsRng.try_fill_bytes(&mut key).unwrap();
+
+    let seed = OsRng.try_next_u64().unwrap();
+    // let mut rng = rand::rng();
+    // let seed = rng.next_u64();
     seed
 }
 
 fn rol64(x: u64, k: u32) -> u64
 {
-// 	          (x << k)   | (x >> (64 - k))
-	(x.unbounded_shl(k)) | (x.unbounded_shr(64 - k))
+	(x.unbounded_shl(k)) | (x.unbounded_shr(64 - k))  // maps for instance, using 8 instead of 64 and shifting by 5: [00001111] -> [111001]
 }
 pub struct Xorshift64
 {

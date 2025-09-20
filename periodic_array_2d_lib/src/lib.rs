@@ -6,14 +6,17 @@ use std::{ops::AddAssign};
 pub use array_rng_interface::ArrayRngInterface;
 use num_traits::{AsPrimitive, Float, FromPrimitive, Num};
 
-pub trait PhysicalObservable: Float + AddAssign + std::default::Default +'static
+
+// Encodes physical data that we use for analyses: either f32 (for graphics simulation) or f64 (for "sersious" data)
+pub trait PhysicalObservable: Float + AddAssign + Default +'static
 {    
 }
 
-impl<P> PhysicalObservable for P where P: Float + AddAssign + std::default::Default + 'static
+impl<P> PhysicalObservable for P where P: Float + AddAssign + Default + 'static
 {    
 }
 
+// The physical spins could be either f64/f32 (ie XY-Spin chains), or integers (here i8). The spin values should be able to be casted from SpinValue --> PhysicalObservable
 pub trait SpinValue<P>: Num + Copy + Default + std::ops::Neg<Output = Self> + 'static + FromPrimitive + AsPrimitive<P> where P: PhysicalObservable
 {
 }
@@ -23,13 +26,13 @@ impl<S,P> SpinValue<P> for S where S: Num + Copy  + Default + std::ops::Neg<Outp
 
 
 
-pub struct PeriodicArray2D<S, P> where S: SpinValue<P>, P: PhysicalObservable
+pub struct PeriodicArray2D<S, P> where S: SpinValue<P>, P: PhysicalObservable 
 {
     data: Vec<S>,
     rows: i32,
     columns: i32,
     number_of_spins: i32,
-    _phantom: PhantomData<P>
+    _phantom: PhantomData<P> // The PeriodicArray should "know" that it can readily convert its values to <P>, therefor keep a zero-sized phantom data, to be able to "store" the generic <P> parameter
 }
 
 #[derive(Debug)]
@@ -82,11 +85,11 @@ impl MonteCarloModulo for i32
         debug_assert!(other > 0, "Modulo: X%N, N must be > 0");
         if self >= other
         {
-            return self-other
+            return self - other
         }
         else if self < 0
         {
-            return self+other
+            return self + other
         }
         self
     }    
@@ -97,7 +100,7 @@ impl<S,P> PeriodicArray2D<S,P> where S: SpinValue<P>, P: PhysicalObservable
 {   
     fn get_total_elements_usize(rows: i32, columns: i32) -> Result<usize, PeriodicArrayError>
     {
-        if rows*columns <= 0 || (rows <0 && columns < 0)
+        if rows*columns <= 0 || (rows < 0 && columns < 0)
         {
             return Err(PeriodicArrayError 
             {
@@ -108,10 +111,12 @@ impl<S,P> PeriodicArray2D<S,P> where S: SpinValue<P>, P: PhysicalObservable
         let n_elements: usize = (columns*rows) as usize;
         Ok(n_elements)
     }
+    #[inline(always)]
     pub fn rows(&self) -> i32
     {
         self.rows
     }
+    #[inline(always)]
     pub fn columns(&self) -> i32
     {
         self.columns
@@ -162,39 +167,11 @@ impl<S,P> PeriodicArray2D<S,P> where S: SpinValue<P>, P: PhysicalObservable
     {
         self.data.fill_with(generator);
     }
-    // pub fn at(&self, i: i32, j: i32) -> Result<S, PeriodicArrayError>
-    // {
-    //     let index: usize     = self.get_index(i,j);
-    //     let Some(value)= self.data.get(index) else
-    //     {
-    //         return Err(
-    //         PeriodicArrayError
-    //         {
-    //             from: String::from("spin2D::at()"),
-    //             message: String::from("Access out of bound")
-    //         });
-    //     };
-    //     Ok(*value)
-    // }
     #[inline(always)]
     pub fn at_unchecked(&self, i: i32, j: i32) -> S
     {
         self.data[self.get_index(i,j)]
     }
-
-    // pub fn at_mut(&mut self, i: i32, j: i32) -> Result<&mut S, PeriodicArrayError>
-    // {
-    //     let index = self.get_index(i,j);
-    //     let Some(value)  = self.data.get_mut(index) else
-    //     {
-    //         return Err(PeriodicArrayError 
-    //         {
-    //             from: String::from("PeriodicArray2D::at_mut()"),
-    //             message: String::from("Access out of bound")
-    //         });
-    //     };
-    //     Ok(value)
-    // }
     #[inline(always)]
     pub fn at_mut_unchecked(&mut self, i: i32, j: i32) -> &mut S
     {
