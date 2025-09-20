@@ -12,15 +12,13 @@ a $512\times512$ spin system in real time, and displays it live using [egui](htt
 The main goal of this project, was to learn more about Rust for: 
 * Real time graphics/physics simulations,
 * Generic programming (using the [num-traits](https://docs.rs/num-traits/latest/num_traits/) crate), 
-* Low-level control of memory/data-strucutres: The spins are encoded as `i8` (1 byte ints), the observables (magnetization etc...) as `f32` for the realtime simulation, but `f64` for the phase diagrams.
-Being able to run a "perform_computation(...)" type function for both `f32` & `f64`, while maintining type safety (ie, avoid implicit casting) was very important.
+* Low-level control of memory/data-strucutres: the spins are encoded as `i8` (1 byte signed ints), the observables (magnetization etc...) as `f32` for the real-time simulation, but `f64` for the phase diagram.
+Being able to run a `perform_computation(...)` type function for both `f32` & `f64`, while maintining type safety (ie, avoid implicit casting) was very important.
 * Low-level implementations of random number generation (mainly XORshifts, following the guidlines/C implementations of [https://prng.di.unimi.it/](https://prng.di.unimi.it/))
 * Multithreading using [Rayon](https://github.com/rayon-rs/rayon) for Monte-Carlo simulations (and possibly benchmark it against C/C++/FORTRAN libs like OpenMP, or Julia's [Polyester](https://github.com/JuliaSIMD/Polyester.jl)).
 * Using Python to interact with high-performance/multithreaded Rust programs. (See [Python Simulation Manager](https://github.com/so-groenen/python_simulation_manager))
 
 ## Real Time Simulation
-
-<br>
 
 ### You can:
 * Change the temperature
@@ -28,10 +26,12 @@ Being able to run a "perform_computation(...)" type function for both `f32` & `f
 * Watch the magnetization change in the plot.
 ### What you can try out:
 
-* Go to high temperatures, quickly lower the temperature to see clusters forming, and seeing the two spin type "fight".
+* Go to high temperatures, quickly lower the temperature to see clusters forming, and seeing the two spin types "fight".
 * See how even at low temperatures, ie, temperature around 0.5 (in units of $J/k_B$) the net magnetization (the red line in the plot) takes a lot of time to move, and stays close to zero.
 * Play around with the external field to stabilize the clusters of your choice & destroy the other ones
 * See how long it takes to get the full screen of one color, while staying above temp = 0.
+* See if you can generate "zero-temperature" artifacts, that is, clusters which survive at zero temperature. Indeed, flipping spins inside of these clusters actually raises their energy, and so these "artifacts" are
+difficult to get rid of using single-spin algorithms.
 
 ### Usage (Desktop)
 First git clone it:
