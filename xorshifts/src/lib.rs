@@ -310,6 +310,7 @@ impl MonteCarloRngInterface<f32> for Xoroshiro128p
 }
 /////////////////
 
+
 impl ArrayRngInterface for Xoshiro256p
 {
     fn generate_rand_i32(&mut self, low: i32, high: i32) -> i32 {
