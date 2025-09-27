@@ -66,7 +66,8 @@ $$ \chi \propto |T-T_c|^{-\gamma} $$
 
 $$ \xi \propto |T-T_c|^{-\nu}. $$
 
-However, for finite size systems, the finite length $L$ introduces a cut off. Heurestically, we could rewrite the last equation as $|T-T_c| \propto L^{-1/\nu}$ and thus, $ \chi \propto L^{\gamma/\nu}$. This leads to the *finite-size scaling ansatz*, where $f$ a dimensionless function:
+However, for finite size systems, the finite length $L$ introduces a cut off. Heurestically, we could rewrite the last equation as $|T-T_c| \propto L^{-1/\nu}$ and thus, $\chi\propto L^{\gamma/\nu}$. This leads to the *finite-size scaling ansatz*, where $f$ a dimensionless function:
+
 $$ \chi(T) = L^{\gamma/\nu}f(L^{1/\nu}(T-T_c)).$$
 
 **Dependency to compute the finite-size scaling**: [Pyfssa](https://github.com/andsor/pyfssa), *A Scientific Python package for finite-size scaling analysis* by Andreas Sorge. See the [documentation](https://pyfssa.readthedocs.io).<br>
