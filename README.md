@@ -33,22 +33,10 @@ Being able to run a `perform_computation(...)` type function for both `f32` & `f
 * See if you can generate "zero-temperature" artifacts, that is, clusters which survive at zero temperature. Indeed, flipping spins inside of these clusters actually raises their energy, and so these "artifacts" are
 difficult to get rid of using single-spin algorithms.
 
-### Usage (Desktop)
-First git clone it:
-```
-git clone https://github.com/so-groenen/2d_ising_in_rust.git 
-cd 2d_ising_in_rust
-```
-Run the simulation using cargo:
-```
-cargo run --bin ising_simulation --release 
-```
-### Usage (Web in your browser)
-For the WASM, we use [Trunk](https://trunkrs.dev/) to build a .wasm binary & a folder with all you need.<br>
-Follow the guidlines in the description of [https://github.com/emilk/eframe_template/](https://github.com/emilk/eframe_template/), starting from the **"Web Locally"** section. 
-
 
 ## Monte-Carlo calculation in Rust 
+
+
 
 Using the same data-structure, we can perform some calcuation for linear system sizes $L=[8, 16, 32, 64, 128]$, and total number of spins $N=L\times L$.<br>
 Parameters used where:
@@ -60,15 +48,15 @@ Parameters used where:
 Here, one step = one sweep across the lattice = $N=L\times L$ metropolis trials.<br>
 The reason for this "convention" is to be able to easier compare with cluster algorithms like the Swendsen-Wang algorithm (repo still private: TODO: finish finite size scaling).<br>
 
-All the computation where performed with an *Intel i7* (8th geneneration), four cores, with two logical threads each, 1.8Ghz/cores, AVX2 SIMD instruction set support, and 8Gb of RAM. Compiled in `--release` mode with `target-cpu=native`.
+All the computations where performed with an *Intel i7* (8th generation), four cores, with two logical threads each, 1.8Ghz/cores, AVX2 SIMD instruction set support, and 8Gb of RAM. Compiled in `--release` mode with `target-cpu=native`.
 
 * Computations are done by iterating "in parallel" over temperatures using 8 threads and the [Rayon](https://github.com/rayon-rs/rayon) library.
 * Parameters are written in Python, and dispatched to Rust as simple files using [Python Simulation Manager](https://github.com/so-groenen/python_simulation_manager). 
 Rust calculations can easily be launched from a python notebook, and the result grabbed for plotting.<br>
 * The `calculation_manager` Python module serves in a way as a "control center" to handle the Rust calcultions.
 A more thorough analysis/calcuation will be done using the Swendsen-Wang algorithm. Indeed, because observables in the Metropolis case exhibit long auto-correlation times (in "normal people's speak", the spin structures look similar as time goes on, and you have to wait quite some time for the spin configuration to look noticeably different), it takes more measure to get more meaningful data.<br>
- 
-<center><img src="ising_calculation/results/overview/overview.png" width="1200"></center>
+ <center><img src="ising_calculation/results/overview/overview.png" width="1200"></center>
+
 
 ## Estimation of the critical temperature & critical exponents from data collapse
 
@@ -87,7 +75,7 @@ I used the fork by Jeffery Wang who has recently updated the package and kept it
 <center><img src="ising_calculation/results/critical_temperatures/mag_suscep_finite_size_scaling.png" width="800"></center>
 
  
-To be compared with Lars Onsager's theoretical prediction (see for ex. lecture notes by [Kari Rummukainen](https://www.mv.helsinki.fi/home/rummukai/simu/fss.pdf):
+To be compared with Lars Onsager's theoretical prediction (see for ex. lecture notes by [Kari Rummukainen](https://www.mv.helsinki.fi/home/rummukai/simu/fss.pdf)):
 
 $$T_c = \frac{2}{\log{1 + \sqrt{2}}} \approx 2.269 \quad \text{(in units of } J/{k_B}\text{)} $$
 and the theoretical critical exponents
@@ -116,6 +104,23 @@ $$ S(\vec{q}) \propto \frac{\xi}{1  + (\xi q)^2} \qquad  \Longrightarrow \qquad 
 
 <!-- Notice how our results is noisy for L=128! This is the tell-tale sign of long auto-correlation times: When averaging over many many data samples, because of the way the Metropolis algorithm works (it is a single-spin algorithm), many data samples will look "similar", and the algorithm will not be able to sample many different configurations in the duration of a calculation. This can be mitigated using cluster algorithms like the Swendsen-Wang algorithm,
 or the Wolff algorithm, or other types like the Worm algorithm...  -->
+# Usage
+
+
+### Real Time simulation: (Desktop)
+First git clone it:
+```
+git clone https://github.com/so-groenen/2d_ising_in_rust.git 
+cd 2d_ising_in_rust
+```
+Run the simulation using cargo:
+```
+cargo run --bin ising_simulation --release 
+```
+### Real Time simulation Web
+For the WASM, we use [Trunk](https://trunkrs.dev/) to build a .wasm binary & a folder with all you need.<br>
+Follow the guidlines in the description of [https://github.com/emilk/eframe_template/](https://github.com/emilk/eframe_template/), starting from the **"Web Locally"** section. 
+
 
 ### Using the Rust calculation from the Python notebook:
 
