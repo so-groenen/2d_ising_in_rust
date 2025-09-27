@@ -26,7 +26,7 @@ Being able to run a `perform_computation(...)` type function for both `f32` & `f
 * Watch the magnetization change in the plot.
 ### What you can try out:
 
-* Go to high temperatures, quickly lower the temperature to see clusters forming, and seeing the two spin types "fight".
+* Go to high temperatures, quickly lower the temperature to see clusters forming, and see the two spin types "fight".
 * See how even at low temperatures, ie, temperature around 0.5 (in units of $J/k_B$) the net magnetization (the red line in the plot) takes a lot of time to move, and stays close to zero.
 * Play around with the external field to stabilize the clusters of your choice & destroy the other ones
 * See how long it takes to get the full screen of one color, while staying above temp = 0.
@@ -38,12 +38,18 @@ difficult to get rid of using single-spin algorithms.
 
 
 
-Using the same data-structure, we can perform some calcuation for linear system sizes $L=[8, 16, 32, 64, 128]$, and total number of spins $N=L\times L$.<br>
+Using the same data-structure, we can perform some calcuations for linear system sizes $L=[8, 16, 32, 64, 128]$, and total number of spins $N=L\times L$, using the Ising Hamiltonian:
+
+$$
+H_{ising} = -J \sum_{\langle i,j \rangle}s_is_j - h\sum_is_i,\qquad s_i \equiv s(\vec{r}_i) = \pm 1.
+$$
+
+
 Parameters used where:
 * $5\times 10^5$ steps both for thermalization & for measurements for $L\in [8, 16, 32, 64]$
 * $1\times 10^5$  steps both for thermalization & for measurements for $L=128$
-* No external magnetic field
-* Usual ferromagnetic interaction strength $J=1$
+* No external magnetic field: $h=0$
+* Usual ferromagnetic interaction strength: $J=1$
 
 Here, one step = one sweep across the lattice = $N=L\times L$ metropolis trials.<br>
 The reason for this "convention" is to be able to easier compare with cluster algorithms like the Swendsen-Wang algorithm (repo still private: TODO: finish finite size scaling).<br>
