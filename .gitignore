@@ -9,8 +9,9 @@ __pycache__/
 
 .VSCodeCounter
 *.ps1
- 
+ising_calculation/results_OLD
 calculation_manager/debug.ipynb
+calculation_manager_fork
 ising_calculation/debug
 # C extensions
 *.so

@@ -16,7 +16,7 @@ The main goal of this project, was to learn more about Rust for:
 Being able to run a `perform_computation(...)` type function for both `f32` & `f64`, while maintaining type safety (*ie*, avoid implicit casting) was very important.
 * Low-level implementations of random number generation (mainly XORshifts, following the guidlines/C implementations of [https://prng.di.unimi.it/](https://prng.di.unimi.it/))
 * Multithreading using [Rayon](https://github.com/rayon-rs/rayon) for Monte-Carlo simulations (and possibly benchmark it against C/C++/FORTRAN libs like OpenMP, or Julia's [Polyester](https://github.com/JuliaSIMD/Polyester.jl)).
-* Using Python to interact with high-performance/multithreaded Rust programs. (See [Python Simulation Manager](https://github.com/so-groenen/python_simulation_manager))
+* Using Python to interact with high-performance/multithreaded Rust programs. (See [physsm: Physics Simulation Manager in Python](https://github.com/so-groenen/physsm))
 
 ## Real Time Simulation
 
@@ -57,7 +57,7 @@ The reason for this "convention" is to be able to easier compare with cluster al
 All the computations where performed with an *Intel i7* (8th generation), four cores, with two logical threads each, 1.8Ghz/cores, AVX2 SIMD instruction set support, and 8Gb of RAM. Compiled in `--release` mode with `target-cpu=native`.
 
 * Computations are done by iterating "in parallel" over temperatures using 8 threads and the [Rayon](https://github.com/rayon-rs/rayon) library.
-* Parameters are written in Python, and dispatched to Rust as simple files using [Python Simulation Manager](https://github.com/so-groenen/python_simulation_manager). 
+* Parameters are written in Python, and dispatched to Rust as simple files using [physsm](https://github.com/so-groenen/physsm). 
 Rust calculations can easily be launched from a python notebook, and the result grabbed for plotting.<br>
 * The `calculation_manager` Python module serves in a way as a "control center" to handle the Rust calcultions.
 A more thorough analysis/calcuation will be done using the Swendsen-Wang algorithm. Indeed, because observables in the Metropolis case exhibit long auto-correlation times (in "normal people's speak", the spin structures look similar as time goes on, and you have to wait quite some time for the spin configuration to look noticeably different), it takes more measure to get more meaningful data.<br>
@@ -137,14 +137,13 @@ First $cd$ into the `calculation_manager` folder (if you have git-cloned the rep
 cd calculation_manager
 uv venv
 ```
-Normally, uv will download the Python Simulation Manager, and other dependencies if not present (numpy, matplotlib & subprocess).
+Normally, uv will download the [physics simulation manager](https://github.com/so-groenen/physsm), and other dependencies if not present (numpy, matplotlib & subprocess).
 Everything is then handled in the notebook. After importing the files in the notebook header we tell the manager where to find the Rust crate, where to put the results, and the parameters. This is handled by the "experiment builder":
 ```python
-rust_dir        = "../ising_calculation"
 folder          = "results"
 name            = "overview"
 
-builder = RustIsingExperimentBuilder(name=name, folder=folder, rust_dir=rust_dir)
+builder = RustIsingExperimentBuilder(name=name, folder=folder)
 ```
 Then we create an "experiment" by providing the necessary parameters & write the parameter files where Rust can find them:
 ```python
@@ -158,7 +157,7 @@ experiment.write_parameter_files()
 
 We are ready to launch the calculations:
 ```python
-for L in experiment.get_lengths():
+for L in experiment.get_scale_variables():
     experiment.perform_rust_computation(L)
 ```    
 which will call `cargo run --release -- results/overview/parameter_LxL.txt` under the hood.
