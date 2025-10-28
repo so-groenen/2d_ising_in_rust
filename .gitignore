@@ -15,7 +15,7 @@ calculation_manager_fork
 ising_calculation/debug
 # C extensions
 *.so
-
+docs/ising_simulation_bg.wasm
 docs_backup
 ising_simulation_old
 low_level_render_target_handler_old
