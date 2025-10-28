@@ -1,7 +1,7 @@
 # 2d Ising Metropolis-Rosenbluth Simulation in Rust
 
 Click the image to try out the interactive WebAssembly simulation!<br>
-[![Watch the video](docs/assets/screen_shot.png)](https://so-groenen.github.io/2d_ising_in_rust/)
+[![Watch the video](docs/assets/screen_shot.png)](https://so-groenen.github.io/real_time_2d_ising_simulation/)
 
 ### This Rust project contains 
 1) **Real time 2D Ising Simulation**, which uses the Metropolis-[Rosenbluth](https://en.wikipedia.org/wiki/Arianna_W._Rosenbluth) algorithm to solve 
